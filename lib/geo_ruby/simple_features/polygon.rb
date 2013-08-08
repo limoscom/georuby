@@ -20,6 +20,10 @@ module GeoRuby
         @rings.send(method_name,*args,&b)
       end
 
+      def concat(b)
+        @rings.send(:concat, b)
+      end
+
       #Bounding box in 2D/3D. Returns an array of 2 points
       def bounding_box
         unless with_z

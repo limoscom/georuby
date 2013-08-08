@@ -17,6 +17,10 @@ module GeoRuby
         @points.send(method_name,*args,&b)
       end
 
+      def concat(b)
+        @points.send(:concat, b)
+      end
+
       #tests if the line string is closed
       def is_closed
         #a bit naive...

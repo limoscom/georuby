@@ -56,8 +56,8 @@ describe GeoRuby::SimpleFeatures::LineString do
 
     it "should concat points" do
       line_string = GeoRuby::SimpleFeatures::LineString::new
-      line_string.concat([GeoRuby::SimpleFeatures::Point.from_x_y(12.4,45.3),GeoRuby::SimpleFeatures::Point.from_x_y(45.4,41.6)])
-
+      line_string << [GeoRuby::SimpleFeatures::Point.from_x_y(12.4,45.3),GeoRuby::SimpleFeatures::Point.from_x_y(45.4,41.6)]
+      
       line_string.length.should eql(2)
       line_string[0].should == GeoRuby::SimpleFeatures::Point.from_x_y(12.4,45.3)
 

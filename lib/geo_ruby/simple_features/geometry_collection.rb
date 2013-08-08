@@ -16,6 +16,10 @@ module GeoRuby
         @geometries.send(method_name,*args,&b)
       end
 
+      def concat(b)
+        @geometries.send(:concat, b)
+      end
+
       #Bounding box in 2D/3D. Returns an array of 2 points
       def bounding_box
         max_x, min_x, max_y, min_y = -Float::MAX, Float::MAX, -Float::MAX, Float::MAX
