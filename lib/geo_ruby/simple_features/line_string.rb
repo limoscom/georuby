@@ -21,6 +21,12 @@ module GeoRuby
         @points.send(:concat, b)
       end
 
+      # This fixes an issue that was exposed when using ruby2 where concating an array to a LinearRing object
+      # was actually concating the array of points within the LinearRing and not the LinearRing itself.
+      def to_ary
+        [self]
+      end
+
       #tests if the line string is closed
       def is_closed
         #a bit naive...
