@@ -195,9 +195,42 @@ module GeoRuby#:nodoc:
 
       #Sends back a geometry from a KML encoded geometry string.
       def self.from_kml(kml)
-        factory = GeometryFactory.new
-        parser = KmlParser.new(factory)
-        parser.parse(kml)
+        return GeoRuby::SimpleFeatures::Geometry.from_ewkt(kml_to_wkt(kml))
+      end
+
+      require 'rexml/document'
+      def self.kml_to_wkt(kml)
+        doc = REXML::Document.new(kml)
+        wkt = ""
+        if ["Point", "LineString", "Polygon" ].include?(doc.root.name)
+          case doc.root.name
+            when "Point" then
+              coords = doc.elements["/Point/coordinates"].text.gsub(/\n/," ")
+              wkt = doc.root.name.upcase + "(" + split_coords(coords).join(' ') + ")"
+            when "LineString" then
+              coords = doc.elements["/LineString/coordinates"].text.gsub(/\n/," ")
+              coords = split_coords(coords)
+              wkt = doc.root.name.upcase + "(" + coords.join(",") + ")"
+            when "Polygon" then
+              # polygons have one outer ring and zero or more inner rings
+              bounds = []
+              bounds << doc.elements["/Polygon/outerBoundaryIs/LinearRing/coordinates"].text
+              inner_coords_elements = doc.elements.each("/Polygon/innerBoundaryIs/LinearRing/coordinates") do |inner_coords|
+                inner_coords = inner_coords.text
+                bounds << inner_coords
+              end
+
+              wkt = doc.root.name.upcase + "(" + bounds.map do |bound|
+                bound.gsub!(/\n/, " ")
+                bound = split_coords(bound)
+                if bound.first != bound.last
+                  bound.push bound.first
+                end
+                "(" + bound.join(",") + ")"
+              end.join(",") + ")"
+          end
+        end
+        return wkt
       end
 
       # Some GeoJSON files do not include srid info, so
